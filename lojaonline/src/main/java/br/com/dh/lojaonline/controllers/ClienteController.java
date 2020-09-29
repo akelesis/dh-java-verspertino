@@ -1,5 +1,6 @@
 package br.com.dh.lojaonline.controllers;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.dh.lojaonline.model.Database;
 import br.com.dh.lojaonline.model.entities.Cliente;
 import br.com.dh.lojaonline.model.repositories.ClienteRepository;
 
@@ -29,9 +30,19 @@ public class ClienteController {
 		return clienteRepository.findAll();
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/{id}") // 1 -> "1"
 	public Optional<Cliente> getById(@PathVariable int id) {
 		return clienteRepository.findById(id);
+	}
+	
+	@GetMapping("/seach")
+	public List<Cliente> getByNomeAndCpf(@RequestParam String nome, @RequestParam String cpf) {
+		return clienteRepository.findByNomeAndCpf(nome, cpf);
+	}
+	
+	@GetMapping("/nomelike")
+	public List<Object[]> getByNomeLike(@RequestParam String nome) {
+		return clienteRepository.encontrarNomeParecido(nome);
 	}
 	
 	@PostMapping()

@@ -1,9 +1,14 @@
 package br.com.dh.lojaonline.model.entities;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class Cliente {
@@ -14,6 +19,18 @@ public class Cliente {
 	private String nome;
 	private String cpf;
 	
+	@OneToMany(mappedBy = "cliente")
+	@JsonIgnoreProperties("cliente")
+	private Set<Telefone> telefones;
+	
+	public Set<Telefone> getTelefones() {
+		return telefones;
+	}
+
+	public void setTelefones(Set<Telefone> telefones) {
+		this.telefones = telefones;
+	}
+
 	public Cliente() {}
 	
 	public Cliente(String nome, String cpf) {
