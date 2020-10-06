@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @SuppressWarnings("deprecation")
@@ -30,14 +31,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
+		auth.inMemoryAuthentication()
+			.withUser("admin")
+			.password("password")
+			.roles("ADMIN");
+		
+		
+		/*.jdbcAuthentication()
 			.dataSource(dataSource)
 			.usersByUsernameQuery("select email, senha, habilitado " + 
 			"from cliente " +
 			"where email = ?")
 			.authoritiesByUsernameQuery("select email, autoridade " +
 			"from autorizacao " +
-			"where email = ?");
+			"where email = ?");*/
 	}
 	
 	
@@ -45,11 +52,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 			.authorizeRequests()
-			.antMatchers(HttpMethod.GET, "/cliente").hasAnyRole("USER", "ADMIN")
-			.antMatchers(HttpMethod.POST, "/cliente").hasAnyRole("USER", "ADMIN")
-			.antMatchers(HttpMethod.DELETE, "/cliente").hasRole("ADMIN")
-			.antMatchers("/telefone").hasRole("ADMIN")
-			.antMatchers("/").permitAll()
-			.and().httpBasic();
+			.antMatchers(HttpMethod.POST, "/login").permitAll()
+			.anyRequest().authenticated()
+			.and().addFilterBefore(new JwtLoginFilter("/login", authenticationManager()), 
+					UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); 
 	}
 }
