@@ -2,6 +2,7 @@ package br.com.dh.jwt.controllers;
 
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.dh.jwt.dto.CredenciaisDTO;
+import br.com.dh.jwt.dto.ForgottenPasswordDTO;
 import br.com.dh.jwt.dto.TokenDTO;
 import br.com.dh.jwt.entities.Usuario;
 import br.com.dh.jwt.exceptions.SenhaInvalidaException;
@@ -47,5 +49,11 @@ public class UsuarioController {
         } catch (UsernameNotFoundException | SenhaInvalidaException e ){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
+    }
+    
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> generateAuthenticatedLink(@RequestBody ForgottenPasswordDTO data) throws UsernameNotFoundException {
+    	usuarioService.recoverPassword(data);
+    	return ResponseEntity.noContent().build();
     }
 }
